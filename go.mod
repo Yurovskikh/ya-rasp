@@ -1,4 +1,4 @@
-module github.com/Yurovskikh/ya-geocoder
+module github.com/Yurovskikh/ya-rasp
 
 go 1.12
 
