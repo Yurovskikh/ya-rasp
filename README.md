@@ -1,2 +1,6 @@
-# ya-geocoder
-Client for Yandex geocoder API
+# ya-rasp
+Client for Yandex rasp API
+
+## TODO
+* Add all method 
+* Support XML
