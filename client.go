@@ -71,7 +71,7 @@ func NewWithDefaultConfig(apiKey string) Client {
 		ExpectContinueTimeout: 1 * time.Second,
 	}
 	httpClient := &http.Client{
-		Timeout:   5 * time.Second,
+		Timeout:   15 * time.Second,
 		Transport: transport,
 	}
 
