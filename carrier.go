@@ -1,6 +1,6 @@
 package yandex
 
 type Carrier struct {
-  Code string `json:"code"`
+  Code int `json:"code"`
   Title string `json:"title"`
 }
