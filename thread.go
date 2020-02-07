@@ -6,7 +6,7 @@ type Thread struct {
 	Number           string      `json:"number"`
 	ShortTitle       string      `json:"short_title"`
 	ThreadMethodLink string      `json:"thread_method_link"`
-	Carrier          interface{} `json:"carrier"`
+	Carrier          Carrier `json:"carrier"`
 	Address          string      `json:"address"`
 	Logo             string      `json:"logo"`
 	Email            string      `json:"email"`
