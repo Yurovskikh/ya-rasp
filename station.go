@@ -8,6 +8,7 @@ type Station struct {
 	Lng           interface{}       `json:"longitude"`
 	Lat           interface{}       `json:"latitude"`
 	TransportType string            `json:"transport_type"`
+	Code 	      string 		`json:"code"`
 
 	Region string
 	City   string
