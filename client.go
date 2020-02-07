@@ -202,7 +202,8 @@ type ThreadRequest struct {
 }
 
 type ThreadResponse struct {
-	Stops []Stop `json:"stops"`
+	Stops     []Stop     `json:"stops"`
+	Transport *Transport `json:"transport_subtype"`
 }
 
 func (c *client) Thread(ctx context.Context, req ThreadRequest) (*ThreadResponse, error) {
