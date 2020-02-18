@@ -27,7 +27,7 @@ func TestClient_Search(t *testing.T) {
 func TestClient_Schedules(t *testing.T) {
 	t.Skip()
 	client := NewWithDefaultConfig("") // set api key
-	reps, err := client.Schedules(context.TODO(), SchedulesRequest{
+	resp, err := client.Schedules(context.TODO(), SchedulesRequest{
 		Station:       "s2006004",
 		Time:          time.Now(),
 		TransportType: Train,
@@ -36,7 +36,7 @@ func TestClient_Schedules(t *testing.T) {
 		t.Error(err)
 	}
 
-	if len(reps.Schedule) == 0 {
+	if len(resp.Schedule) == 0 {
 		t.Error("empty schedules")
 	}
 }
@@ -67,5 +67,22 @@ func TestClient_Thread(t *testing.T) {
 
 	if len(resp.Stops) == 0 {
 		t.Error("empty stops")
+	}
+}
+
+func TestClient_NearestStations(t *testing.T) {
+	t.Skip()
+	client := NewWithDefaultConfig("") // set api key
+	resp, err := client.NearestStations(context.TODO(), NearestStationsRequest{
+		Lat:      57.47609910000001,
+		Lng:      60.2535071,
+		Distance: 50,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(resp.Stations) == 0 {
+		t.Error("empty stations")
 	}
 }

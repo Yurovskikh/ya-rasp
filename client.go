@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -29,6 +30,8 @@ type Client interface {
 	Search(ctx context.Context, req SearchRequest) (*SearchResponse, error)
 	// Список станций следования
 	Thread(ctx context.Context, req ThreadRequest) (*ThreadResponse, error)
+	// Список ближайших станций
+	NearestStations(ctx context.Context, req NearestStationsRequest) (*NearestStationsResponse, error)
 }
 
 type client struct {
@@ -182,7 +185,7 @@ func (c *client) Search(ctx context.Context, req SearchRequest) (*SearchResponse
 	q.Set("format", c.cfg.Format.String())
 	q.Set("lang", c.cfg.Lang.String())
 	q.Set("from", req.From)
-	q.Set("to", req.To)
+	//q.Set("to", req.To)
 	q.Set("date", req.Date.Format(dateFormat))
 
 	u.RawQuery = q.Encode()
@@ -228,6 +231,46 @@ func (c *client) Thread(ctx context.Context, req ThreadRequest) (*ThreadResponse
 	u.RawQuery = q.Encode()
 
 	var resp ThreadResponse
+	if err := c.get(ctx, u.String(), &resp); err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+type NearestStationsRequest struct {
+	Lat      float64
+	Lng      float64
+	Distance int
+}
+
+type NearestStationsResponse struct {
+	Pagination interface{} `json:"pagination"`
+	Stations   []Station   `json:"stations"`
+}
+
+func (c *client) NearestStations(ctx context.Context, req NearestStationsRequest) (*NearestStationsResponse, error) {
+	if req.Lat == 0 || req.Lng == 0 || req.Distance == 0 {
+		return nil, fmt.Errorf("unable to require params")
+	}
+
+	u := url.URL{
+		Scheme: scheme,
+		Host:   c.cfg.Host,
+		Path:   c.cfg.Version + "/nearest_stations/",
+	}
+
+	q := u.Query()
+	q.Set("apikey", c.cfg.ApiKey)
+	q.Set("format", c.cfg.Format.String())
+	q.Set("lang", c.cfg.Lang.String())
+	q.Set("lat", strconv.FormatFloat(req.Lat, 'f', -1, 64))
+	q.Set("lng", strconv.FormatFloat(req.Lng, 'f', -1, 64))
+	q.Set("distance", strconv.Itoa(req.Distance))
+
+	u.RawQuery = q.Encode()
+
+	var resp NearestStationsResponse
 	if err := c.get(ctx, u.String(), &resp); err != nil {
 		return nil, err
 	}
