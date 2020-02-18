@@ -94,11 +94,13 @@ type SchedulesRequest struct {
 	Station       string        //
 	Time          time.Time     //
 	TransportType transportType //
+	Offset        int
+	Limit         int
 }
 
 type SchedulesResponse struct {
+	Pagination        Pagination  `json:"pagination"`         // Информация о постраничном выводе найденных рейсов.
 	Date              string      `json:"date"`               // Дата, на которую получен список рейсов.
-	Pagination        interface{} `json:"pagination"`         // Информация о постраничном выводе найденных рейсов.
 	Station           Station     `json:"station"`            // Информация об указанной в запросе станции.
 	Schedule          []Schedule  `json:"schedule"`           // Список рейсов.
 	ScheduleDirection interface{} `json:"schedule_direction"` // Код и название запрошенного направления рейсов.
@@ -119,6 +121,13 @@ func (c *client) Schedules(ctx context.Context, req SchedulesRequest) (*Schedule
 	q.Set("transport_type", req.TransportType.String())
 	q.Set("station", req.Station)
 	q.Set("date", req.Time.Format(dateFormat))
+
+	if req.Offset != 0 {
+		q.Set("offset", strconv.Itoa(req.Offset))
+	}
+	if req.Limit != 0 {
+		q.Set("limit", strconv.Itoa(req.Limit))
+	}
 
 	u.RawQuery = q.Encode()
 
@@ -157,13 +166,15 @@ func (c *client) StationsList(ctx context.Context) (*StationsListResponse, error
 }
 
 type SearchRequest struct {
-	From string
-	To   string
-	Date time.Time
+	From   string
+	To     string
+	Date   time.Time
+	Offset int
+	Limit  int
 }
 
 type SearchResponse struct {
-	Pagination       interface{}   `json:"pagination"`
+	Pagination       Pagination    `json:"pagination"`
 	IntervalSegments []interface{} `json:"interval_segments"`
 	Segments         []Segment     `json:"segments"`
 	Search           interface{}   `json:"search"`
@@ -187,6 +198,13 @@ func (c *client) Search(ctx context.Context, req SearchRequest) (*SearchResponse
 	q.Set("from", req.From)
 	//q.Set("to", req.To)
 	q.Set("date", req.Date.Format(dateFormat))
+
+	if req.Offset != 0 {
+		q.Set("offset", strconv.Itoa(req.Offset))
+	}
+	if req.Limit != 0 {
+		q.Set("limit", strconv.Itoa(req.Limit))
+	}
 
 	u.RawQuery = q.Encode()
 
@@ -242,11 +260,13 @@ type NearestStationsRequest struct {
 	Lat      float64
 	Lng      float64
 	Distance int
+	Offset   int
+	Limit    int
 }
 
 type NearestStationsResponse struct {
-	Pagination interface{} `json:"pagination"`
-	Stations   []Station   `json:"stations"`
+	Pagination Pagination `json:"pagination"`
+	Stations   []Station  `json:"stations"`
 }
 
 func (c *client) NearestStations(ctx context.Context, req NearestStationsRequest) (*NearestStationsResponse, error) {
@@ -267,6 +287,13 @@ func (c *client) NearestStations(ctx context.Context, req NearestStationsRequest
 	q.Set("lat", strconv.FormatFloat(req.Lat, 'f', -1, 64))
 	q.Set("lng", strconv.FormatFloat(req.Lng, 'f', -1, 64))
 	q.Set("distance", strconv.Itoa(req.Distance))
+
+	if req.Offset != 0 {
+		q.Set("offset", strconv.Itoa(req.Offset))
+	}
+	if req.Limit != 0 {
+		q.Set("limit", strconv.Itoa(req.Limit))
+	}
 
 	u.RawQuery = q.Encode()
 
