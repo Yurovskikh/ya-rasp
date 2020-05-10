@@ -223,6 +223,7 @@ type ThreadRequest struct {
 }
 
 type ThreadResponse struct {
+	Days 	  string     `json:"days"`
 	Stops     []Stop     `json:"stops"`
 	Transport *Transport `json:"transport_subtype"`
 }
