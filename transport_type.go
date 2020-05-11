@@ -1,16 +1,16 @@
 package yandex
 
-type transportType string
+type TransportType string
 
 const (
-	Plane      transportType = "plane"
-	Train      transportType = "train"
-	Suburban   transportType = "suburban"
-	Bus        transportType = "bus"
-	Water      transportType = "water"
-	Helicopter transportType = "helicopter"
+	Plane      TransportType = "plane"
+	Train      TransportType = "train"
+	Suburban   TransportType = "suburban"
+	Bus        TransportType = "bus"
+	Water      TransportType = "water"
+	Helicopter TransportType = "helicopter"
 )
 
-func (t transportType) String() string {
+func (t TransportType) String() string {
 	return string(t)
 }
