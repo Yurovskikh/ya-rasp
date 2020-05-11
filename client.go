@@ -93,7 +93,7 @@ func NewWithDefaultConfig(apiKey string) Client {
 type SchedulesRequest struct {
 	Station       string        //
 	Time          time.Time     //
-	TransportType transportType //
+	TransportType TransportType //
 	Offset        int
 	Limit         int
 }
