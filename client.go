@@ -37,6 +37,8 @@ type Client interface {
 type client struct {
 	client *http.Client
 	cfg    *Config
+	keys   []string
+	idxKey int
 }
 
 // New return client
@@ -63,6 +65,10 @@ func New(cfg *Config) Client {
 
 // NewWithDefaultConfig return client with default cfg
 func NewWithDefaultConfig(apiKey string) Client {
+	return NewWithPoolKey(apiKey)
+}
+
+func NewWithPoolKey(keys ...string) Client {
 	transport := &http.Transport{
 		DialContext: (&net.Dialer{
 			Timeout:   30 * time.Second,
@@ -82,11 +88,11 @@ func NewWithDefaultConfig(apiKey string) Client {
 		client: httpClient,
 		cfg: &Config{
 			Host:    defaultHost,
-			ApiKey:  apiKey,
 			Format:  JsonFormat,
 			Lang:    Ru,
 			Version: apiVersion,
 		},
+		keys: keys,
 	}
 }
 
@@ -115,7 +121,7 @@ func (c *client) Schedules(ctx context.Context, req SchedulesRequest) (*Schedule
 	}
 
 	q := u.Query()
-	q.Set("apikey", c.cfg.ApiKey)
+	q.Set("apikey", c.key())
 	q.Set("format", c.cfg.Format.String())
 	q.Set("lang", c.cfg.Lang.String())
 	q.Set("transport_type", req.TransportType.String())
@@ -151,7 +157,7 @@ func (c *client) StationsList(ctx context.Context) (*StationsListResponse, error
 	}
 
 	q := u.Query()
-	q.Set("apikey", c.cfg.ApiKey)
+	q.Set("apikey", c.key())
 	q.Set("format", c.cfg.Format.String())
 	q.Set("lang", c.cfg.Lang.String())
 
@@ -192,7 +198,7 @@ func (c *client) Search(ctx context.Context, req SearchRequest) (*SearchResponse
 	}
 
 	q := u.Query()
-	q.Set("apikey", c.cfg.ApiKey)
+	q.Set("apikey", c.key())
 	q.Set("format", c.cfg.Format.String())
 	q.Set("lang", c.cfg.Lang.String())
 	q.Set("from", req.From)
@@ -239,7 +245,7 @@ func (c *client) Thread(ctx context.Context, req ThreadRequest) (*ThreadResponse
 	}
 
 	q := u.Query()
-	q.Set("apikey", c.cfg.ApiKey)
+	q.Set("apikey", c.key())
 	q.Set("format", c.cfg.Format.String())
 	q.Set("lang", c.cfg.Lang.String())
 	q.Set("uid", req.UID)
@@ -281,7 +287,7 @@ func (c *client) NearestStations(ctx context.Context, req NearestStationsRequest
 	}
 
 	q := u.Query()
-	q.Set("apikey", c.cfg.ApiKey)
+	q.Set("apikey", c.key())
 	q.Set("format", c.cfg.Format.String())
 	q.Set("lang", c.cfg.Lang.String())
 	q.Set("lat", strconv.FormatFloat(req.Lat, 'f', -1, 64))
@@ -318,6 +324,12 @@ func (c *client) get(ctx context.Context, url string, resp interface{}) error {
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
+		if httpResp.StatusCode == http.StatusTooManyRequests {
+			err := c.nextKey()
+			if err != nil {
+				return err
+			}
+		}
 		body, err := ioutil.ReadAll(httpResp.Body)
 		if err != nil {
 			return err
@@ -334,4 +346,18 @@ func (c *client) get(ctx context.Context, url string, resp interface{}) error {
 	default:
 		return errors.New("format unsupported")
 	}
+}
+
+func (c *client) key() string {
+	return c.keys[c.idxKey]
+}
+
+func (c *client) nextKey() error {
+	if c.idxKey == len(c.keys) {
+		return errors.New("pool api keys is empty")
+	}
+
+	c.idxKey = c.idxKey + 1
+
+	return nil
 }
