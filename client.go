@@ -99,7 +99,7 @@ func NewWithPoolKey(keys ...string) Client {
 type SchedulesRequest struct {
 	Station       string        //
 	Time          time.Time     //
-	TransportType transportType //
+	TransportType TransportType //
 	Offset        int
 	Limit         int
 }
@@ -229,6 +229,7 @@ type ThreadRequest struct {
 }
 
 type ThreadResponse struct {
+	Days 	  string     `json:"days"`
 	Stops     []Stop     `json:"stops"`
 	Transport *Transport `json:"transport_subtype"`
 }
