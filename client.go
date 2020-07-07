@@ -229,7 +229,7 @@ type ThreadRequest struct {
 }
 
 type ThreadResponse struct {
-	Days 	  string     `json:"days"`
+	Days      string     `json:"days"`
 	Stops     []Stop     `json:"stops"`
 	Transport *Transport `json:"transport_subtype"`
 }
@@ -354,7 +354,7 @@ func (c *client) key() string {
 }
 
 func (c *client) nextKey() error {
-	if c.idxKey == len(c.keys) {
+	if c.idxKey == len(c.keys)-1 {
 		return errors.New("pool api keys is empty")
 	}
 
