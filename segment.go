@@ -1,7 +1,5 @@
 package yandex
 
-import "time"
-
 type Segment struct {
 	Arrival           string      `json:"arrival"`
 	From              Station     `json:"from"`
