@@ -3,11 +3,11 @@ package yandex
 import "time"
 
 type Segment struct {
-	Arrival           time.Time   `json:"arrival"`
+	Arrival           string      `json:"arrival"`
 	From              Station     `json:"from"`
 	Thread            Thread      `json:"thread"`
 	DeparturePlatform string      `json:"departure_platform"`
-	Departure         time.Time   `json:"departure"`
+	Departure         string      `json:"departure"`
 	Stops             string      `json:"stops"`
 	DepartureTerminal interface{} `json:"departure_terminal"`
 	To                Station     `json:"to"`
