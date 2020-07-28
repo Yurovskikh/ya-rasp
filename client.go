@@ -202,7 +202,7 @@ func (c *client) Search(ctx context.Context, req SearchRequest) (*SearchResponse
 	q.Set("format", c.cfg.Format.String())
 	q.Set("lang", c.cfg.Lang.String())
 	q.Set("from", req.From)
-	//q.Set("to", req.To)
+	q.Set("to", req.To)
 	
 	if !req.Date.IsZero() {
 		q.Set("date", req.Date.Format(dateFormat))
