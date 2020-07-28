@@ -187,7 +187,7 @@ type SearchResponse struct {
 }
 
 func (c *client) Search(ctx context.Context, req SearchRequest) (*SearchResponse, error) {
-	if req.From == "" || req.To == "" || req.Date.IsZero() {
+	if req.From == "" || req.To == "" {
 		return nil, errors.New("one of required request param are missing")
 	}
 
