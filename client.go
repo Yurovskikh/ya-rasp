@@ -203,7 +203,10 @@ func (c *client) Search(ctx context.Context, req SearchRequest) (*SearchResponse
 	q.Set("lang", c.cfg.Lang.String())
 	q.Set("from", req.From)
 	//q.Set("to", req.To)
-	q.Set("date", req.Date.Format(dateFormat))
+	
+	if !req.Date.IsZero() {
+		q.Set("date", req.Date.Format(dateFormat))
+	}
 
 	if req.Offset != 0 {
 		q.Set("offset", strconv.Itoa(req.Offset))
