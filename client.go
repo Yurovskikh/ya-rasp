@@ -290,6 +290,7 @@ type NearestStationsResponse struct {
 		Lng             float64       `json:"lng"`
 		Type            string        `json:"type"`
 		StationTypeName string        `json:"station_type_name"`
+		Majority        int           `json:"majority"`
 	} `json:"stations"`
 }
 
