@@ -269,20 +269,32 @@ func (c *client) Thread(ctx context.Context, req ThreadRequest) (*ThreadResponse
 }
 
 type NearestStationsRequest struct {
-	Lat      float64
-	Lng      float64
-	Distance int
-	Offset   int
-	Limit    int
+	Lat         float64
+	Lng         float64
+	StationType string
+	Distance    int
+	Offset      int
+	Limit       int
 }
 
 type NearestStationsResponse struct {
 	Pagination Pagination `json:"pagination"`
-	Stations   []Station  `json:"stations"`
+	Stations   []struct {
+		Distance        float64       `json:"distance"`
+		Code            string        `json:"code"`
+		StationType     string        `json:"station_type"`
+		TypeChoices     interface{}   `json:"type_choices"`
+		Title           string        `json:"title"`
+		TransportType   TransportType `json:"transport_type"`
+		Lat             float64       `json:"lat"`
+		Lng             float64       `json:"lng"`
+		Type            string        `json:"type"`
+		StationTypeName string        `json:"station_type_name"`
+	} `json:"stations"`
 }
 
 func (c *client) NearestStations(ctx context.Context, req NearestStationsRequest) (*NearestStationsResponse, error) {
-	if req.Lat == 0 || req.Lng == 0 || req.Distance == 0 {
+	if req.Lat == 0 || req.Lng == 0 {
 		return nil, fmt.Errorf("unable to require params")
 	}
 
@@ -298,7 +310,12 @@ func (c *client) NearestStations(ctx context.Context, req NearestStationsRequest
 	q.Set("lang", c.cfg.Lang.String())
 	q.Set("lat", strconv.FormatFloat(req.Lat, 'f', -1, 64))
 	q.Set("lng", strconv.FormatFloat(req.Lng, 'f', -1, 64))
-	q.Set("distance", strconv.Itoa(req.Distance))
+	if req.Distance != 0 {
+		q.Set("distance", strconv.Itoa(req.Distance))
+	}
+	if req.StationType != "" {
+		q.Set("station_types", req.StationType)
+	}
 
 	if req.Offset != 0 {
 		q.Set("offset", strconv.Itoa(req.Offset))
