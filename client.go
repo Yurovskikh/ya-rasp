@@ -32,6 +32,8 @@ type Client interface {
 	Thread(ctx context.Context, req ThreadRequest) (*ThreadResponse, error)
 	// Список ближайших станций
 	NearestStations(ctx context.Context, req NearestStationsRequest) (*NearestStationsResponse, error)
+	//
+	NearestCity(ctx context.Context, req NearestCityRequest) (*NearestCityResponse, error)
 }
 
 type client struct {
@@ -203,7 +205,7 @@ func (c *client) Search(ctx context.Context, req SearchRequest) (*SearchResponse
 	q.Set("lang", c.cfg.Lang.String())
 	q.Set("from", req.From)
 	q.Set("to", req.To)
-	
+
 	if !req.Date.IsZero() {
 		q.Set("date", req.Date.Format(dateFormat))
 	}
@@ -308,6 +310,63 @@ func (c *client) NearestStations(ctx context.Context, req NearestStationsRequest
 	u.RawQuery = q.Encode()
 
 	var resp NearestStationsResponse
+	if err := c.get(ctx, u.String(), &resp); err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+type NearestCityRequest struct {
+	Lat      float64
+	Lng      float64
+	Distance int
+	Offset   int
+	Limit    int
+}
+
+type NearestCityResponse struct {
+	Distance     float64 `json:"distance"`
+	Code         string  `json:"code"`
+	Title        string  `json:"title"`
+	PopularTitle string  `json:"popular_title"`
+	ShortTitle   string  `json:"short_title"`
+	Lat          float64 `json:"lat"`
+	Lng          float64 `json:"lng"`
+	Type         string  `json:"type"`
+}
+
+func (c *client) NearestCity(ctx context.Context, req NearestCityRequest) (*NearestCityResponse, error) {
+	if req.Lat == 0 || req.Lng == 0 {
+		return nil, fmt.Errorf("unable to require params")
+	}
+
+	u := url.URL{
+		Scheme: scheme,
+		Host:   c.cfg.Host,
+		Path:   c.cfg.Version + "/nearest_settlement/",
+	}
+
+	q := u.Query()
+	q.Set("apikey", c.key())
+	q.Set("format", c.cfg.Format.String())
+	q.Set("lang", c.cfg.Lang.String())
+	q.Set("lat", strconv.FormatFloat(req.Lat, 'f', -1, 64))
+	q.Set("lng", strconv.FormatFloat(req.Lng, 'f', -1, 64))
+	if req.Distance != 0 {
+		q.Set("distance", strconv.Itoa(req.Distance))
+	}
+
+	if req.Offset != 0 {
+		q.Set("offset", strconv.Itoa(req.Offset))
+	}
+	if req.Limit != 0 {
+		q.Set("limit", strconv.Itoa(req.Limit))
+	}
+
+	u.RawQuery = q.Encode()
+
+	var resp NearestCityResponse
 	if err := c.get(ctx, u.String(), &resp); err != nil {
 		return nil, err
 	}
