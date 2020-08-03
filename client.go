@@ -128,7 +128,9 @@ func (c *client) Schedules(ctx context.Context, req SchedulesRequest) (*Schedule
 	q.Set("lang", c.cfg.Lang.String())
 	q.Set("transport_type", req.TransportType.String())
 	q.Set("station", req.Station)
-	q.Set("date", req.Time.Format(dateFormat))
+	if !req.Time.IsZero() {
+		q.Set("date", req.Time.Format(dateFormat))
+	}
 
 	if req.Offset != 0 {
 		q.Set("offset", strconv.Itoa(req.Offset))
