@@ -1,9 +1,5 @@
 package yandex
 
-import (
-	"time"
-)
-
 type Schedule struct {
 	ExceptDays string    `json:"except_days"` // Дни, в которые нитка не курсирует (даже если они входят в множество, описанное элементом days). Format "6, 7, 8, 9, 13, 14 февраля"
 	Arrival    *string `json:"arrival"`     // Время прибытия
