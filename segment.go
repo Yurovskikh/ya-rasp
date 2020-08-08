@@ -15,4 +15,5 @@ type Segment struct {
 	ArrivalTerminal   string      `json:"arrival_terminal"`
 	StartDate         string      `json:"start_date"`
 	ArrivalPlatform   string      `json:"arrival_platform"`
+	Days string `json:"days"`
 }
